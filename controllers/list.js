@@ -6,6 +6,7 @@ const API_KEY = config.API_KEY
 const yelpURL = 'https://api.yelp.com/v3/businesses'
 const axios = require('axios')
 const {v4: uuidv4} = require('uuid')
+const restaurant = require('../models/restaurant')
 
 
 
@@ -39,11 +40,18 @@ router.get('/myList/:uuid', async (request, response) => {
         headers: { 'Authorization': `Bearer ${API_KEY}` 
         }
       })
+      // console.log('yelp obj', yelpObj.data)
+      const voters = await Restaurant.findOne({restaurant_id:restaurantList[i].restaurant_id, url_id:url})
+      // console.log('voters', voters.votes)
+      yelpObj.data.votes = voters.votes
+      console.log('yelp obj', yelpObj.data)
       restaurantArray.push(yelpObj.data)
+
     } catch (e) {
       console.log(e)
     }
   }
+
 
   if(monchList){
     let returnData = {
@@ -81,6 +89,29 @@ router.put('/myList/:uuid', async (request, response) => {
   return response.status(200)
 })
 
+// updates votes
+router.put('/myList/:uuid/votes', async (request, response) => {
+  const body = request.body.data
+  const uuid = request.params.uuid
+  console.log(body)
+
+  const votersOld = await Restaurant.findOne({restaurant_id:body.itemAPI, url_id:uuid})
+
+  console.log(votersOld)
+  console.log(votersOld.votes)
+  const filter = {restaurant_id: body.itemAPI, url_id: uuid}
+  const voteArray = votersOld.votes
+  voteArray.push(body.name)
+  const update = {votes: voteArray }
+  console.log(update.votes)
+
+  await Restaurant.findOneAndUpdate(filter, update, {
+    new: true
+  });
+
+  return response.json(update.votes)
+})
+
 // delete entry from list
 router.delete('/myList/:uuid', async (request, response) => {
   const body = request.body
@@ -92,11 +123,12 @@ router.delete('/myList/:uuid', async (request, response) => {
   return response.status(200)
 })
 
-// create unique URL 
+// create unique URL and new list
 router.post('/newList', (request, response) => {
   const body = request.body.saveData
   const title = body.title
   const listArray = body.restaurants
+  const date = body.date
   console.log(body)
   const newURL = uuidv4()
 
@@ -108,7 +140,7 @@ router.post('/newList', (request, response) => {
   const list = new MonchList({
     url: newURL,
     title: title,
-    date: new Date()
+    date: date
   })
   console.log(list)
 
