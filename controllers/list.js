@@ -169,15 +169,16 @@ router.get('/api/searchResult/', (request, response) => {
   console.log(request.query)
 
   const urlQueryString = new URLSearchParams(request.query)
-  
+  console.log('APIKEY',API_KEY)
   axios
     .get( `${yelpURL}/search?` + urlQueryString, {
       headers: { Authorization: `Bearer ${API_KEY}` 
       }
     })
     .then(result => {
-      response.json(result.data.businesses)
+      console.log('yelp search result', result)
       console.log(result.data.businesses[0])
+      response.json(result.data.businesses)
     })
     .catch(e => console.log(e));
 })
