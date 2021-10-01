@@ -158,7 +158,7 @@ router.post('/newList', (request, response) => {
     restaurant.save()
       .catch(e => console.log(e))
   }
-  response.json({redirect: `myList/${newURL}`)
+  response.json({redirect: `myList/${newURL}`})
 })
 
 
