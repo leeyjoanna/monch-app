@@ -10,7 +10,8 @@ const {v4: uuidv4} = require('uuid')
 
 
 // main page load
-router.get('/myList', (request, response) => {
+router.get('/myList/', (request, response) => {
+  console.log('my list route')
   let returnData = {
     url: '',
     title: 'create your new list:',
@@ -20,13 +21,30 @@ router.get('/myList', (request, response) => {
     return response.json(returnData)
 })
 
+// reroutes unique URL 
+// router.get('/:uuid', (request, response) => {
+//   const uuid = request.params.uuid
+//   response.redirect(`/myList/${uuid}`)
+// })
+
 // gets unique URL
 router.get('/myList/:uuid', async (request, response) => {
+  console.log('my list uuid route')
   let restaurantArray = []
 
   const url = request.params.uuid
   console.log(url)
 
+  if (url === ''){
+    let returnData = {
+      url: '',
+      title: 'create your new list:',
+      date: '',
+      restaurants: []
+    }
+      return response.json(returnData)
+  }
+  
   const monchList = await MonchList.findOne({url: url})
   console.log(monchList)
 
