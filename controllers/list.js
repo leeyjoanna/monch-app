@@ -6,7 +6,6 @@ const API_KEY = config.API_KEY
 const yelpURL = 'https://api.yelp.com/v3/businesses'
 const axios = require('axios')
 const {v4: uuidv4} = require('uuid')
-const restaurant = require('../models/restaurant')
 
 
 
@@ -159,7 +158,7 @@ router.post('/newList', (request, response) => {
     restaurant.save()
       .catch(e => console.log(e))
   }
-  response.json({redirect: newURL})
+  response.json({redirect: `myList/${newURL}`)
 })
 
 
