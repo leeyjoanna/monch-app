@@ -39,10 +39,10 @@ router.get('/myList/:uuid', async (request, response) => {
   }
 
   const monchList = await MonchList.findOne({url: url})
-  console.log(monchList)
+  // console.log(monchList)
 
   const restaurantList = await Restaurant.find({url_id:url})
-  console.log(restaurantList)
+  // console.log(restaurantList)
   
   for (let i = 0; i < restaurantList.length; i++){
     try{
@@ -50,11 +50,11 @@ router.get('/myList/:uuid', async (request, response) => {
         headers: { 'Authorization': `Bearer ${API_KEY}` 
         }
       })
-      console.log('yelp obj', yelpObj.data)
+      // console.log('yelp obj', yelpObj.data)
       const voters = await Restaurant.findOne({restaurant_id:restaurantList[i].restaurant_id, url_id:url})
-      console.log('voters', voters.votes)
+      // console.log('voters', voters.votes)
       yelpObj.data.votes = voters.votes
-      console.log('yelp obj', yelpObj.data)
+      // console.log('yelp obj', yelpObj.data)
       restaurantArray.push(yelpObj.data)
 
     } catch (e) {
@@ -70,7 +70,7 @@ router.get('/myList/:uuid', async (request, response) => {
       date: monchList.date,
       restaurants: restaurantArray
     }
-    console.log(returnData)
+    // console.log(returnData)
     return response.json(returnData)
   }
   else {
@@ -85,8 +85,8 @@ router.get('/myList/:uuid', async (request, response) => {
 router.put('/myList/:uuid', async (request, response) => {
   const body = request.body 
   const uuid = request.params.uuid
-  console.log(body.itemAPI)
-  console.log(uuid)
+  // console.log(body.itemAPI)
+  // console.log(uuid)
 
   const restaurant = new Restaurant({
     restaurant_id: body.itemAPI.id,
@@ -103,17 +103,17 @@ router.put('/myList/:uuid', async (request, response) => {
 router.put('/myList/:uuid/votes', async (request, response) => {
   const body = request.body.data
   const uuid = request.params.uuid
-  console.log(body)
+  // console.log(body)
 
   const votersOld = await Restaurant.findOne({restaurant_id:body.itemAPI, url_id:uuid})
 
-  console.log(votersOld)
-  console.log(votersOld.votes)
+  // console.log(votersOld)
+  // console.log(votersOld.votes)
   const filter = {restaurant_id: body.itemAPI, url_id: uuid}
   const voteArray = votersOld.votes
   voteArray.push(body.name)
   const update = {votes: voteArray }
-  console.log(update.votes)
+  // console.log(update.votes)
 
   await Restaurant.findOneAndUpdate(filter, update, {
     new: true
@@ -126,8 +126,8 @@ router.put('/myList/:uuid/votes', async (request, response) => {
 router.delete('/myList/:uuid', async (request, response) => {
   const body = request.body
   const uuid = request.params.uuid
-  console.log(body.itemAPI)
-  console.log(uuid)
+  // console.log(body.itemAPI)
+  // console.log(uuid)
 
   await Restaurant.findOneAndDelete({url_id: uuid, restaurant_id: body.itemAPI})
   return response.status(200)
@@ -173,7 +173,7 @@ router.post('/newList', (request, response) => {
 
 // call yelp API to search
 router.get('/searchResult/', (request, response) => {
-  console.log(request.query)
+  // console.log(request.query)
 
   const urlQueryString = new URLSearchParams(request.query)
   // console.log('APIKEY',API_KEY)
@@ -195,7 +195,7 @@ router.get('/searchResult/', (request, response) => {
 router.get(`/searchResult/id`, (request, response) => {
   const yelp_id = request.query.id
 
-  console.log(yelp_id)
+  // console.log(yelp_id)
   const urlQueryString = new URLSearchParams(request.query)
 
   axios
@@ -205,7 +205,7 @@ router.get(`/searchResult/id`, (request, response) => {
     })
     .then(result => {
       response.json(result.data)
-      console.log(result.data)
+      // console.log(result.data)
     })
     .catch(e => console.log(e));
 })

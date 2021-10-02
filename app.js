@@ -26,8 +26,20 @@ app.use(middleware.requestLogger)
 app.use('/monchapi', router)
 
 app.use('/*', function (req, res) {
-  logger.info(req)
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  console.log('request', req.query)
+  console.log('url', req.url)
+  console.log('OG url', req.originalUrl)
+  console.log('path', req.path)
+  console.log('base', req.baseUrl)
+  const searchQuery = req.originalUrl.split('?')
+
+  if(searchQuery[1]){
+    res.redirect(searchQuery[0])
+  }
+  else{
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  }
+
 });
 
 app.use(middleware.unknownEndpoint)
