@@ -11,7 +11,6 @@ const {v4: uuidv4} = require('uuid')
 
 // main page load
 router.get('/myList/', (request, response) => {
-  console.log('my list route')
   let returnData = {
     url: '',
     title: 'create your new list:',
@@ -21,19 +20,13 @@ router.get('/myList/', (request, response) => {
     return response.json(returnData)
 })
 
-// reroutes unique URL 
-// router.get('/:uuid', (request, response) => {
-//   const uuid = request.params.uuid
-//   response.redirect(`/myList/${uuid}`)
-// })
 
 // gets unique URL
 router.get('/myList/:uuid', async (request, response) => {
-  console.log('my list uuid route')
   let restaurantArray = []
 
   const url = request.params.uuid
-  console.log(url)
+  // console.log(url)
 
   if (url === ''){
     let returnData = {
@@ -44,7 +37,7 @@ router.get('/myList/:uuid', async (request, response) => {
     }
       return response.json(returnData)
   }
-  
+
   const monchList = await MonchList.findOne({url: url})
   console.log(monchList)
 
@@ -57,9 +50,9 @@ router.get('/myList/:uuid', async (request, response) => {
         headers: { 'Authorization': `Bearer ${API_KEY}` 
         }
       })
-      // console.log('yelp obj', yelpObj.data)
+      console.log('yelp obj', yelpObj.data)
       const voters = await Restaurant.findOne({restaurant_id:restaurantList[i].restaurant_id, url_id:url})
-      // console.log('voters', voters.votes)
+      console.log('voters', voters.votes)
       yelpObj.data.votes = voters.votes
       console.log('yelp obj', yelpObj.data)
       restaurantArray.push(yelpObj.data)
@@ -146,7 +139,6 @@ router.post('/newList', (request, response) => {
   const title = body.title
   const listArray = body.restaurants
   const date = body.date
-  console.log(body)
   const newURL = uuidv4()
 
   if (body === undefined) {
@@ -159,19 +151,17 @@ router.post('/newList', (request, response) => {
     title: title,
     date: date
   })
-  console.log(list)
 
   list.save()
     .catch(e => console.log(e))
 
   for (let i = 0; i < (listArray).length; i++){
-    console.log('inside for')
     const restaurant = new Restaurant({
       restaurant_id: listArray[i],
       url_id: newURL,
       votes: []
     })
-    console.log(restaurant)
+    // console.log(restaurant)
 
     restaurant.save()
       .catch(e => console.log(e))
@@ -182,19 +172,19 @@ router.post('/newList', (request, response) => {
 
 
 // call yelp API to search
-router.get('/api/searchResult/', (request, response) => {
+router.get('/searchResult/', (request, response) => {
   console.log(request.query)
 
   const urlQueryString = new URLSearchParams(request.query)
-  console.log('APIKEY',API_KEY)
+  // console.log('APIKEY',API_KEY)
   axios
     .get( `${yelpURL}/search?` + urlQueryString, {
       headers: { Authorization: `Bearer ${API_KEY}` 
       }
     })
     .then(result => {
-      console.log('yelp search result', result)
-      console.log(result.data.businesses[0])
+      // console.log('yelp search result', result)
+      // console.log(result.data.businesses[0])
       response.json(result.data.businesses)
     })
     .catch(e => console.log(e));
@@ -202,7 +192,7 @@ router.get('/api/searchResult/', (request, response) => {
 
 
 // call yelp API for specific business by yelp_id
-router.get(`/api/searchResult/id`, (request, response) => {
+router.get(`/searchResult/id`, (request, response) => {
   const yelp_id = request.query.id
 
   console.log(yelp_id)
@@ -220,74 +210,4 @@ router.get(`/api/searchResult/id`, (request, response) => {
     .catch(e => console.log(e));
 })
   
-
-// noteRouter.get('/:id', (request, response, next) => {
-// Note.findById(request.params.id)
-//     .then(note => {
-//     if (note) {
-//         response.json(note)
-//     } else {
-//         response.status(404).end()
-//     }
-//     })
-//     .catch(error => next(error))
-// })
-
-
-// noteRouter.put('/:id', (request, response) => {
-// const body = request.body
-// const note = {
-//     content: body.content,
-//     important: body.important
-// }
-// Note.findByIdAndUpdate(request.params.id, note, { new:true })
-//     .then(updatedNote => {
-//     response.json(updatedNote)
-//     })
-//     .catch(error => next(error))
-// // Note.findOneAndUpdate(
-// //   { _id: id},
-// //   {
-// //     $set: {
-// //       important: request.body.important}
-// //     },
-// //     {new: true,
-// //     upsert: false}
-// // )
-// // .then(result => {
-// //   console.log(`PUT: ${result}`)
-// //   response.json(result)
-// // })
-// // .catch(error => console.log(error))
-// })
-
-// noteRouter.delete('/:id', (request, response, next) => {
-// Note.findByIdAndRemove(request.params.id)
-//     .then(result => {
-//     response.status(204).end()
-//     })
-//     .catch(error => next(error))
-// })
-
-// noteRouter.post('/', (request, response, next) => {
-// const body = request.body
-// if (body.content === undefined) {
-//     return response.status(400).json({
-//     error: 'content missing'
-//     })
-// }
-
-// const note = new Note({
-//     content: body.content,
-//     important: body.important || false,
-//     date: new Date(),
-// })
-
-// note.save()
-//     .then(savedNote => {
-//     response.json(savedNote)
-//     })
-//     .catch(error => next(error))
-// })
-
 module.exports = router
