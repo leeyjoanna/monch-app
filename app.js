@@ -26,6 +26,7 @@ app.use(middleware.requestLogger)
 app.use('/monchapi', router)
 
 app.use('/*', function (req, res) {
+  logger.info(req)
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
