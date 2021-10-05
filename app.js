@@ -26,11 +26,11 @@ app.use(middleware.requestLogger)
 app.use('/monchapi', router)
 
 app.use('/*', function (req, res) {
-  console.log('request', req.query)
-  console.log('url', req.url)
-  console.log('OG url', req.originalUrl)
-  console.log('path', req.path)
-  console.log('base', req.baseUrl)
+  // console.log('request', req.query)
+  // console.log('url', req.url)
+  // console.log('OG url', req.originalUrl)
+  // console.log('path', req.path)
+  // console.log('base', req.baseUrl)
   const searchQuery = req.originalUrl.split('?')
 
   if(searchQuery[1]){
